@@ -171,14 +171,14 @@ class PlotResource(Resource):
 
 
 # Add the DatasetResource to the API
-api.add_resource(DatasetResource, '/dataset/')
-api.add_resource(ComputeResource, '/dataset/<int:dataset_id>/compute/')
-api.add_resource(PlotResource, '/dataset/<int:dataset_id>/plot')
+api.add_resource(DatasetResource, '/dataset/') #To post a new dataset / To get the list of all datasets
+api.add_resource(ComputeResource, '/dataset/<int:dataset_id>/compute/') #To compute operations like: max, min, sum and average
+api.add_resource(PlotResource, '/dataset/<int:dataset_id>/plot') #To fetch all the values of columns for data ploting
 
 # Run the Flask application
 if __name__ == '__main__':
     # Check if the required environment variables are set
-    required_env_vars = ['DBNAME', 'USER', 'PASSWORD', 'HOST', 'PORT']
+    required_env_vars = ['DBNAME', 'USER', 'PASSWORD', 'HOST', 'PORT', 'UPLOAD_FOLDER']
     missing_env_vars = [env_var for env_var in required_env_vars if os.getenv(env_var) is None]
     if missing_env_vars:
         print(f"Missing required environment variables: {', '.join(missing_env_vars)}")
