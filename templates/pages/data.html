@@ -1,0 +1,98 @@
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg" style="max-height: 350px;">
+    <table class="w-full text-sm text-left text-gray-500">
+        <thead class="border-b text-xs text-gray-700 uppercase">
+            <tr>
+                <th scope="col" class="px-6 py-3 bg-gray-50 sticky top-0">
+                    Name
+                </th>
+                <th scope="col" class="px-6 py-3 bg-white sticky top-0">
+                    File
+                </th>
+            </tr>
+        </thead>
+        <tbody id="dataset-list-table-body" style="overflow-y: auto;">
+            <!-- Add your table rows here -->
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    // Function to create the table rows based on the data
+    function createTableRows(data) {
+        var tableBody = document.getElementById("dataset-list-table-body");
+
+        // Clear existing table rows except for the header row
+        while (tableBody.rows.length > 0) {
+            tableBody.deleteRow(0);
+        }
+
+        if (data.error) {
+            // Display error message as a row with a single cell
+            var errorRow = document.createElement("tr");
+            var errorCell = document.createElement("td");
+            errorCell.colSpan = 2;
+            errorRow.classList.add('border-b', 'border-gray-200')
+            errorCell.classList.add('px-6', 'py-4', 'font-medium', 'text-gray-900', 'whitespace-nowrap', 'bg-gray-50')
+            errorCell.appendChild(document.createTextNode(data.error));
+            errorRow.appendChild(errorCell);
+            tableBody.appendChild(errorRow);
+        } else {
+            // Display data rows with name and file path
+            if (data.length === 0) {
+                // Add a row with a single cell for the "No datasets found" message
+                var noDataFoundRow = document.createElement("tr");
+                var noDataFoundCell = document.createElement("td");
+                noDataFoundCell.colSpan = 2;
+                noDataFoundRow.classList.add('border-b', 'border-gray-200')
+                noDataFoundCell.classList.add('px-6', 'py-4', 'font-medium', 'text-gray-900', 'whitespace-nowrap', 'bg-gray-50')
+                noDataFoundCell.appendChild(document.createTextNode("No datasets found"));
+                noDataFoundRow.appendChild(noDataFoundCell);
+                tableBody.appendChild(noDataFoundRow);
+            } else {
+                // Display data rows with name and file path
+                data.forEach(function (rowData) {
+                    var row = document.createElement("tr");
+                    var nameCell = document.createElement("td");
+                    var filePathCell = document.createElement("td");
+                    row.classList.add('border-b', 'border-gray-200')
+                    nameCell.classList.add('px-6', 'py-4', 'font-medium', 'text-gray-900', 'whitespace-nowrap', 'bg-gray-50')
+                    filePathCell.classList.add('px-6', 'py-4')
+                    nameCell.appendChild(document.createTextNode(rowData[1]));
+                    filePathCell.appendChild(document.createTextNode(rowData[2]));
+                    row.appendChild(nameCell);
+                    row.appendChild(filePathCell);
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+    }
+
+
+    // Function to handle the AJAX request
+    function fetchData() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/dataset", true);
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                createTableRows(data);
+            } else {
+                var data = JSON.parse(xhr.responseText);
+                createTableRows(data);
+            }
+        };
+
+        xhr.send();
+    }
+
+    // Function to handle the click event and initiate the AJAX request
+    function handleClick() {
+        fetchData();
+    }
+
+    // Event listener for the click event
+    document.getElementById("data-tab").addEventListener("click", handleClick);
+
+</script>

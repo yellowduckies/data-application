@@ -1,0 +1,25 @@
+<div id="myTabContent">
+    <div class="hidden p-4 rounded-lg" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            {% include 'pages/home.html' %}
+        </p>
+    </div>
+    <div class="hidden p-4 rounded-lg" id="data" role="tabpanel" aria-labelledby="data-tab">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex justify-center">
+            <div class="flex flex-col items-start">
+                {% include 'pages/data.html' %}
+            </div>
+            <div class="flex flex-col items-start ml-4">
+                {% include 'components/upload.html' %}
+            </div>
+        </div>
+
+        </p>
+    </div>
+    <div class="hidden p-4 rounded-lg" id="plot" role="tabpanel" aria-labelledby="plot-tab">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            {% include 'pages/plot.html' %}
+        </p>
+    </div>
+</div>

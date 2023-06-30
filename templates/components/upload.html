@@ -1,0 +1,130 @@
+<div class="flex flex-col items-center">
+    <form method="post" class="w-full max-w-sm relative overflow-x-auto shadow-md sm:rounded-lg p-5"
+        enctype="multipart/form-data" onsubmit="handleFormSubmit(event)">
+
+        <label for="filename" class="block mb-2 text-sm font-medium text-gray-900">Filename</label>
+        <input type="text" id="filename" aria-describedby="helper-text-explanation"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            placeholder="Dataset.csv" name="data_name">
+        <div class="text-red-500 text-sm mt-2" id="filename-error"></div>
+
+        <label class="block mb-2 text-sm font-medium text-gray-900 mt-4" for="dataset_file">Upload dataset file
+            (CSV)</label>
+        <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
+            aria-describedby="dataset_file_help" id="dataset_file" type="file" name="file" accept="text/csv">
+        <div class="text-red-500 text-sm mt-2" id="dataset-error"></div>
+        <div class="mt-2 text-sm text-gray-500" id="dataset_file_help">Only .csv files are allowed</div>
+
+
+
+        <button class="w-full mt-4 bg-blue-500 text-white text-sm rounded-lg px-4 py-2 cursor-pointer" type="submit"
+            id="upload-dataset-file-button">
+            Upload
+        </button>
+    </form>
+</div>
+
+
+<script>
+    function handleFormSubmit(event) {
+        event.preventDefault();
+
+        var uploadButton = document.getElementById('upload-dataset-file-button');
+        uploadButton.disabled = true;
+
+        // Perform form validation
+        var filenameInput = document.getElementById('filename');
+        var filename = filenameInput.value.trim();
+        var datasetFileInput = document.getElementById('dataset_file');
+        var datasetFile = datasetFileInput.value;
+
+        // Validate filename
+        if (filename === '') {
+            highlightField(filenameInput, 'filename-error');
+            showValidationMessage('Filename is required');
+            uploadButton.disabled = false;
+            return;
+        } else {
+            removeHighlightField(filenameInput, 'filename-error')
+        }
+
+        // Validate dataset file
+        if (datasetFile === '') {
+            highlightField(datasetFileInput, 'dataset-error');
+            showValidationMessage('Please select a dataset file');
+            uploadButton.disabled = false;
+            return;
+        } else {
+            removeHighlightField(datasetFileInput, 'dataset-error');
+        }
+
+        // Perform additional actions or validations here
+        var form = document.querySelector('form');
+        var formData = new FormData(form);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/dataset", true);
+
+        xhr.onload = function () {
+            if (xhr.status === 201) {
+                var response = JSON.parse(xhr.responseText);
+                showNotification('success', response.message);
+                fetchData();
+                form.reset();
+            } else {
+                showNotification('error', xhr.responseText['error']);
+            }
+            uploadButton.disabled = false;
+        };
+
+        xhr.onerror = function () {
+            showNotification('error', 'Error submitting form');
+            uploadButton.disabled = false;
+        };
+
+        xhr.send(formData);
+    }
+
+    function showNotification(type, message) {
+        var toast = document.getElementById('toast-notification-box');
+        var toastText = toast.querySelector('.text-sm');
+        var toastIcon = toast.querySelector('svg');
+
+        toast.classList.remove('hidden', 'opacity-0');
+        toastText.textContent = message;
+
+        var { icon, color } = toastIconFunction(type)
+        // Replace the color class on toastIcon
+        var currentColorClass = toastIcon.classList.item(0);
+        var newColorClass = `text-${color}-600`;
+        toastIcon.classList.replace(currentColorClass, newColorClass);
+        while (toastIcon.firstChild) {
+            toastIcon.firstChild.remove();
+        }
+        toastIcon.innerHTML = icon;
+
+        setTimeout(function () {
+            toast.classList.add('hidden');
+        }, 5000);
+    }
+
+    function highlightField(field, errorId) {
+        field.classList.add('border-red-500');
+        var errorMessage = field.parentElement.querySelector(`#${errorId}`);
+        if (errorMessage) {
+            errorMessage.textContent = 'Invalid input';
+        }
+    }
+    function removeHighlightField(field, errorId) {
+        field.classList.replace('border-red-500', '');
+        var errorMessage = field.parentElement.querySelector(`#${errorId}`);
+        if (errorMessage) {
+            errorMessage.textContent = '';
+        }
+    }
+
+    function showValidationMessage(message) {
+        showNotification('error', message);
+    }
+
+</script>

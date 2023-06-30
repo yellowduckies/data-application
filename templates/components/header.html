@@ -1,0 +1,27 @@
+<div class="mb-4 border-b border-gray-200 flex items-center justify-between px-10 py-4">
+
+    <a class="flex items-center" onclick="document.getElementById('home-tab').click();" style="cursor: pointer;">
+        <img src="https://www.xvectorlabs.com/icons/icon-48x48.png?v=73bf3fe15bc8457dbe23f0d4cc788030" alt="Logo"
+            class="h-8 ml-4">
+        <span class="ml-2 text-lg font-bold">XVector Labs</span>
+    </a>
+
+
+    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myHeader" data-tabs-toggle="#myHeaderContent"
+        role="tablist">
+        <li class="mr-2" role="presentation">
+            <button class="inline-block p-4 border-b-2 rounded-t-lg" id="home-tab" data-tabs-target="#home"
+                type="button" role="tab" aria-controls="home" aria-selected="false">Home</button>
+        </li>
+        <li class="mr-2" role="presentation">
+            <button class="inline-block p-4 border-b-2 border-transparent rounded-t-lg" id="data-tab"
+                data-tabs-target="#data" type="button" role="tab" aria-controls="data"
+                aria-selected="false">Data</button>
+        </li>
+        <li class="mr-2" role="presentation">
+            <button class="inline-block p-4 border-b-2 border-transparent rounded-t-lg" id="plot-tab"
+                data-tabs-target="#plot" type="button" role="tab" aria-controls="plot"
+                aria-selected="false">Plot</button>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,35 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.6/flowbite.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <header>
+        {% block header %}
+        {% include 'components/header.html' %}
+        {% endblock %}
+    </header>
+
+    <main>
+        {% block content %}
+        {% include 'components/content.html' %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        {% include 'components/toast.html' %}
+        {% block footer %}
+        {% include 'components/footer.html' %}
+        {% endblock %}
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.6/flowbite.min.js"></script>
+</body>
+
+</html>

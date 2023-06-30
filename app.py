@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_restful import Api, Resource
 from werkzeug.utils import secure_filename
 import psycopg2
@@ -174,6 +174,10 @@ class PlotResource(Resource):
 api.add_resource(DatasetResource, '/dataset/') #To post a new dataset / To get the list of all datasets
 api.add_resource(ComputeResource, '/dataset/<int:dataset_id>/compute/') #To compute operations like: max, min, sum and average
 api.add_resource(PlotResource, '/dataset/<int:dataset_id>/plot') #To fetch all the values of columns for data ploting
+
+@app.route('/')
+def index():
+    return render_template('base.html')
 
 # Run the Flask application
 if __name__ == '__main__':
