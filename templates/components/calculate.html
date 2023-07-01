@@ -1,0 +1,42 @@
+<div class="flex flex-col items-center">
+    <form method="post" class="w-full max-w-sm relative overflow-x-auto shadow-md sm:rounded-lg p-5"
+        enctype="multipart/form-data" onsubmit="handleCalculateFormSubmit(event)">
+
+        <label for="select-filename" class="block mb-2 text-sm font-medium text-gray-900">Select Filename</label>
+        <select type="text" id="select-filename" aria-describedby="helper-text-explanation"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" name="select_filename">
+            <option value="" selected disabled>Select file from below options</option>
+        </select>
+        <div class="text-red-500 text-sm mt-2" id="select-filename-error"></div>
+        
+        
+        <label for="select-column-name" class="block mb-2 text-sm font-medium text-gray-900">Select column-name</label>
+        <select type="text" id="select-column-name" aria-describedby="helper-text-explanation"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" name="column_name">
+            <option value="" selected disabled>Select file from below options</option>
+        </select>
+        <div class="text-red-500 text-sm mt-2" id="select-column-name-error"></div>
+
+
+        <label for="operation" class="block mb-2 text-sm font-medium text-gray-900">Select Operation</label>
+        <select type="text" id="operation" aria-describedby="helper-text-explanation"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" name="operation">
+            <option value="" selected disabled>Select operation from below options</option>
+            <option value="max">MAX</option>
+            <option value="min">MIN</option>
+            <option value="sum">SUM</option>
+            <option value="average">AVERAGE</option>
+        </select>
+
+
+        <button class="w-full mt-4 bg-blue-500 text-white text-sm rounded-lg px-4 py-2 cursor-pointer" type="submit"
+            id="">
+            Calculate
+        </button>
+    </form>
+</div>
+
+<script>
+
+    document.getElementById("plot-tab").addEventListener("click", handleClick);
+</script>

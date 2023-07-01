@@ -19,7 +19,14 @@
     </div>
     <div class="hidden p-4 rounded-lg" id="plot" role="tabpanel" aria-labelledby="plot-tab">
         <p class="text-sm text-gray-500 dark:text-gray-400">
-            {% include 'pages/plot.html' %}
+            <div class="flex justify-center">
+                <div class="flex flex-col items-start">
+                    {% include 'components/calculate.html' %}
+                </div>
+                <div class="flex flex-col items-start ml-4">
+                    {% include 'pages/plot.html' %}
+                </div>
+            </div>
         </p>
     </div>
 </div>

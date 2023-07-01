@@ -77,6 +77,7 @@
         xhr.onload = function () {
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
+                file_dataset_data = data;
                 createTableRows(data);
             } else {
                 var data = JSON.parse(xhr.responseText);

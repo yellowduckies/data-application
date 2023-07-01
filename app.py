@@ -3,7 +3,8 @@ from flask_restful import Api, Resource
 from werkzeug.utils import secure_filename
 import psycopg2
 import traceback
-import os, csv
+import os
+import csv
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -42,7 +43,7 @@ class DatasetResource(Resource):
             # Retrieve the list of stored datasets
             cursor.execute("SELECT * FROM datasets")
             dataset_names = cursor.fetchall()
-            if len(dataset_names)>0:
+            if len(dataset_names) > 0:
                 return dataset_names, 200
             else:
                 return {'error': 'No datasets found'}, 400
@@ -76,7 +77,8 @@ class DatasetResource(Resource):
             csv_file.save(csv_filename)
 
             # Insert dataset information into the database
-            cursor.execute("INSERT INTO datasets (data_name, file_path) VALUES (%s, %s)", (data_name, csv_filename))
+            cursor.execute(
+                "INSERT INTO datasets (data_name, file_path) VALUES (%s, %s)", (data_name, csv_filename))
             conn.commit()
 
             return {'message': 'Dataset uploaded successfully.'}, 201
@@ -84,6 +86,53 @@ class DatasetResource(Resource):
             traceback.print_exc()
             conn.rollback()
             return {'error': 'An error occurred while uploading the dataset.'}, 500
+
+# Resource for the /dataset/:id API
+class GetColumnResource(Resource):
+    def get(self, dataset_id):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        try:
+            # Retrieve the dataset
+            cursor.execute(
+                "SELECT * FROM datasets WHERE id = %s", (dataset_id,))
+            dataset = cursor.fetchone()
+            if dataset is None:
+                return {'error': 'No datasets found'}, 400
+
+            file_path = dataset[2]
+            result_dict = {}
+            # Open the CSV file and perform the operation
+            with open(file_path, 'r') as file:
+                reader = csv.DictReader(file)
+                fieldnames = reader.fieldnames
+
+                for column_name in fieldnames:
+                    result_dict[column_name] = []
+
+                for row in reader:
+                    for column_name in fieldnames:
+                        value = row[column_name]
+                        try:
+                            value = int(value)
+                        except ValueError:
+                            pass
+                        result_dict[column_name].append(value)
+
+            integer_keys = []
+            for key, values in result_dict.items():
+                if all(isinstance(value, int) for value in values):
+                    integer_keys.append(key)
+
+            return integer_keys
+
+        except Exception as e:
+            traceback.print_exc()
+            return {'error': 'An error occurred while retrieving dataset list.'}, 500
+        finally:
+            cursor.close()
+            conn.close()
+
 
 # Resource for the /dataset/:id/compute API
 class ComputeResource(Resource):
@@ -96,7 +145,8 @@ class ComputeResource(Resource):
 
         try:
             # Retrieve the dataset from the database
-            cursor.execute("SELECT * FROM datasets WHERE id = %s", (dataset_id,))
+            cursor.execute(
+                "SELECT * FROM datasets WHERE id = %s", (dataset_id,))
             dataset = cursor.fetchone()
 
             if dataset is None:
@@ -139,7 +189,8 @@ class PlotResource(Resource):
 
         try:
             # Retrieve the dataset from the database
-            cursor.execute("SELECT * FROM datasets WHERE id = %s", (dataset_id,))
+            cursor.execute(
+                "SELECT * FROM datasets WHERE id = %s", (dataset_id,))
             dataset = cursor.fetchone()
 
             if dataset is None:
@@ -171,9 +222,15 @@ class PlotResource(Resource):
 
 
 # Add the DatasetResource to the API
-api.add_resource(DatasetResource, '/dataset/') #To post a new dataset / To get the list of all datasets
-api.add_resource(ComputeResource, '/dataset/<int:dataset_id>/compute/') #To compute operations like: max, min, sum and average
-api.add_resource(PlotResource, '/dataset/<int:dataset_id>/plot') #To fetch all the values of columns for data ploting
+# To post a new dataset / To get the list of all datasets
+api.add_resource(DatasetResource, '/dataset/')
+# To the columns of selected dataset
+api.add_resource(GetColumnResource, '/dataset/<int:dataset_id>/get_columns')
+# To compute operations like: max, min, sum and average
+api.add_resource(ComputeResource, '/dataset/<int:dataset_id>/compute/')
+# To fetch all the values of columns for data ploting
+api.add_resource(PlotResource, '/dataset/<int:dataset_id>/plot')
+
 
 @app.route('/')
 def index():
@@ -182,10 +239,13 @@ def index():
 # Run the Flask application
 if __name__ == '__main__':
     # Check if the required environment variables are set
-    required_env_vars = ['DBNAME', 'USER', 'PASSWORD', 'HOST', 'PORT', 'UPLOAD_FOLDER']
-    missing_env_vars = [env_var for env_var in required_env_vars if os.getenv(env_var) is None]
+    required_env_vars = ['DBNAME', 'USER',
+                         'PASSWORD', 'HOST', 'PORT', 'UPLOAD_FOLDER']
+    missing_env_vars = [
+        env_var for env_var in required_env_vars if os.getenv(env_var) is None]
     if missing_env_vars:
-        print(f"Missing required environment variables: {', '.join(missing_env_vars)}")
+        print(
+            f"Missing required environment variables: {', '.join(missing_env_vars)}")
         exit(1)
 
     app.run(debug=True)
