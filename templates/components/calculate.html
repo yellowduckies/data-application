@@ -1,18 +1,24 @@
 <div class="flex flex-col items-center">
-    <form method="post" class="w-full max-w-sm relative overflow-x-auto shadow-md sm:rounded-lg p-5"
-        enctype="multipart/form-data" onsubmit="handleCalculateFormSubmit(event)">
+    <form method="post" class="w-full max-w-sm relative overflow-x-auto shadow-md sm:rounded-lg px-5 pb-5 pt-2"
+        enctype="multipart/form-data" onsubmit="handleCalculateFormSubmit()" id="calculate-operation-form">
+
+        <h1 class="mb-2 text-xl font-extrabold text-gray-900 md:text-xl lg:text-xl"><span
+                class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Compute
+                columns.</span></h1>
 
         <label for="select-filename" class="block mb-2 text-sm font-medium text-gray-900">Select Filename</label>
         <select type="text" id="select-filename" aria-describedby="helper-text-explanation"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" name="select_filename">
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            name="select_filename" onchange="fetchColumnName(event.target.value)">
             <option value="" selected disabled>Select file from below options</option>
         </select>
         <div class="text-red-500 text-sm mt-2" id="select-filename-error"></div>
-        
-        
-        <label for="select-column-name" class="block mb-2 text-sm font-medium text-gray-900">Select column-name</label>
+
+
+        <label for="select-column-name" class="block mb-2 text-sm font-medium text-gray-900">Select column name</label>
         <select type="text" id="select-column-name" aria-describedby="helper-text-explanation"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" name="column_name">
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            name="column_name">
             <option value="" selected disabled>Select file from below options</option>
         </select>
         <div class="text-red-500 text-sm mt-2" id="select-column-name-error"></div>
@@ -20,23 +26,131 @@
 
         <label for="operation" class="block mb-2 text-sm font-medium text-gray-900">Select Operation</label>
         <select type="text" id="operation" aria-describedby="helper-text-explanation"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" name="operation">
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            name="operation">
             <option value="" selected disabled>Select operation from below options</option>
             <option value="max">MAX</option>
             <option value="min">MIN</option>
             <option value="sum">SUM</option>
             <option value="average">AVERAGE</option>
         </select>
+        <div class="text-red-500 text-sm mt-2" id="operation-error"></div>
 
+        <p id="result-computed-value-here"></p>
 
-        <button class="w-full mt-4 bg-blue-500 text-white text-sm rounded-lg px-4 py-2 cursor-pointer" type="submit"
-            id="">
-            Calculate
-        </button>
+        <div class="flex flex-row gap-2">
+            <button class="w-full mt-4 border border-blue-500 text-blue-500 text-sm rounded-lg px-4 py-2 cursor-pointer"
+                type="button" onclick="document.getElementById('calculate-operation-form').reset();">
+                Clear
+            </button>
+            <button class="w-full mt-4 bg-blue-500 text-white text-sm rounded-lg px-4 py-2 cursor-pointer" type="submit"
+                id="calculate-submit-button">
+                Calculate
+            </button>
+        </div>
     </form>
 </div>
 
 <script>
 
+
+    function fetchColumnName(dataset_id) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", `/dataset/${dataset_id}/get_columns`, true);
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var options = "<option value='' selected disabled>Select file from below options</option>";
+
+                for (var i = 0; i < data.length; i++) {
+                    var optionValue = data[i];
+                    options += `<option value="${optionValue}">${optionValue}</option>`;
+                }
+
+                document.getElementById("select-column-name").innerHTML = options;
+            } else {
+                var data = JSON.parse(xhr.responseText);
+                console.log(data)
+            }
+        };
+
+        xhr.send();
+    }
+
+    function updateResultText(response) {
+        var resultComputedValueHere = document.getElementById('result-computed-value-here');
+        resultComputedValueHere.innerHTML = response;
+    }
+
+    function handleCalculateFormSubmit() {
+        event.preventDefault();
+
+        var calculateSubmitButton = document.getElementById('calculate-submit-button');
+        calculateSubmitButton.disabled = true;
+
+        // Perform form validation
+        var filenameInput = document.getElementById('select-filename');
+        var filename = filenameInput.value;
+        var columnNameInput = document.getElementById('select-column-name');
+        var columnName = columnNameInput.value;
+        var operationNameInput = document.getElementById('operation');
+        var operationName = operationNameInput.value.toLowerCase();
+
+        // Validate filename
+        if (filename === '') {
+            highlightField(filenameInput, 'select-filename-error');
+            showValidationMessage('Filename is required');
+            calculateSubmitButton.disabled = false;
+            return;
+        } else {
+            removeHighlightField(filenameInput, 'select-filename-error')
+        }
+        if (columnName === '') {
+            highlightField(columnNameInput, 'select-column-name-error');
+            showValidationMessage('Column name is required');
+            calculateSubmitButton.disabled = false;
+            return;
+        } else {
+            removeHighlightField(filenameInput, 'select-column-name-error')
+        }
+        if (operationName === '') {
+            highlightField(operationNameInput, 'operation-error');
+            showValidationMessage('Operation is required');
+            calculateSubmitButton.disabled = false;
+            return;
+        } else {
+            removeHighlightField(filenameInput, 'operation-error')
+        }
+
+        updateResultText('computing...');
+        // Perform additional actions or validations here
+        var form = document.getElementById('calculate-operation-form');
+        var formData = new FormData(form);
+        // console.log(form)
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", `/dataset/${filename}/compute`, true);
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                response = `The calculated value is: ${response.result}`
+                showNotification('success', response);
+                // console.log(response)
+                updateResultText(response);
+            } else {
+                showNotification('error', xhr.responseText['error']);
+            }
+            calculateSubmitButton.disabled = false;
+        };
+
+        xhr.onerror = function () {
+            showNotification('error', 'Error calculating form');
+            calculateSubmitButton.disabled = false;
+        };
+
+        xhr.send(formData);
+    }
     document.getElementById("plot-tab").addEventListener("click", handleClick);
 </script>

@@ -68,6 +68,16 @@
         }
     }
 
+    // Function to create the option in select box
+    function generateSelectOptions(data) {
+        var options = "<option value='' selected disabled>Select file from below options</option>";
+        for (var i = 0; i < data.length; i++) {
+            var optionValue = data[i][0];
+            var optionText = data[i][1];
+            options += `<option value="${optionValue}">${optionText}</option>`;
+        }
+        return options;
+    }
 
     // Function to handle the AJAX request
     function fetchData() {
@@ -77,8 +87,9 @@
         xhr.onload = function () {
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
-                file_dataset_data = data;
                 createTableRows(data);
+                var selectOptions = generateSelectOptions(data);
+                document.getElementById("select-filename").innerHTML = selectOptions;
             } else {
                 var data = JSON.parse(xhr.responseText);
                 createTableRows(data);
