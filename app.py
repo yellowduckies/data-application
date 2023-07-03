@@ -104,7 +104,7 @@ class GetColumnResource(Resource):
             file_path = dataset[2]
             result_dict = {}
             # Open the CSV file and perform the operation
-            with open(file_path, 'r') as file:
+            with open(file_path, 'r', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
                 fieldnames = reader.fieldnames
 
@@ -161,7 +161,7 @@ class ComputeResource(Resource):
 
             file_path = dataset[2]
             # Open the CSV file and perform the operation
-            with open(file_path, 'r') as csv_file:
+            with open(file_path, 'r', encoding='utf-8') as csv_file:
                 reader = csv.DictReader(csv_file)
                 values = [float(row[column_name]) for row in reader]
 
@@ -206,7 +206,7 @@ class PlotResource(Resource):
             file_path = dataset[2]
 
             # Read the CSV file and extract the data
-            with open(file_path, 'r') as csv_file:
+            with open(file_path, 'r', encoding='utf-8') as csv_file:
                 reader = csv.DictReader(csv_file)
                 data = list(reader)
 
