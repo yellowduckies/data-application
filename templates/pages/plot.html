@@ -18,8 +18,7 @@
 
 
             <div class="">
-                <label for="select-column-name-1" class="block mb-2 text-sm font-medium text-gray-900">Column name
-                    1</label>
+                <label for="select-column-name-1" class="block mb-2 text-sm font-medium text-gray-900">Column name 1 (X-Axis)</label>
                 <select type="text" id="select-column-name-1" aria-describedby="helper-text-explanation"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     name="column1">
@@ -29,8 +28,7 @@
             </div>
 
             <div class="">
-                <label for="select-column-name-2" class="block mb-2 text-sm font-medium text-gray-900">Column name
-                    2</label>
+                <label for="select-column-name-2" class="block mb-2 text-sm font-medium text-gray-900">Column name 2 (Y-Axis)</label>
                 <select type="text" id="select-column-name-2" aria-describedby="helper-text-explanation"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     name="column2">
@@ -148,17 +146,18 @@
                     yaxis: { title: yaxisColumn }
                 };
                 Plotly.newPlot('myPlotHere', data, layout);
-                plotSubmitButton.disabled = false;
                 showNotification('success', 'The graph has been loaded successfully');
                 // Plotly.newPlot('myPlotHere', response);
             } else {
                 var errorResponse = JSON.parse(xhr.responseText);
-                showNotification('error', errorResponse['message']);
+                showNotification('error', errorResponse['error']);
             }
+            plotSubmitButton.disabled = false;
         };
-
+        
         xhr.onerror = function () {
             showNotification('error', 'Error retrieving plot data...');
+            plotSubmitButton.disabled = false;
         };
 
         xhr.send();

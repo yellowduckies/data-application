@@ -92,6 +92,7 @@ class GetColumnResource(Resource):
     def get(self, dataset_id):
         conn = get_db_connection()
         cursor = conn.cursor()
+        only_integer = request.args.get('only_integer', False)
         try:
             # Retrieve the dataset
             cursor.execute(
@@ -113,18 +114,24 @@ class GetColumnResource(Resource):
                 for row in reader:
                     for column_name in fieldnames:
                         value = row[column_name]
-                        try:
-                            value = int(value)
-                        except ValueError:
-                            pass
-                        result_dict[column_name].append(value)
+                        if only_integer:
+                            try:
+                                value = int(value)
+                            except ValueError:
+                                pass
+                            result_dict[column_name].append(value)
+                        else:
+                            result_dict[column_name].append(value)
 
-            integer_keys = []
+            keys = []
             for key, values in result_dict.items():
-                if all(isinstance(value, int) for value in values):
-                    integer_keys.append(key)
+                if only_integer:
+                    if all(isinstance(value, int) for value in values):
+                        keys.append(key)
+                else:
+                    keys.append(key)
 
-            return integer_keys
+            return keys
 
         except Exception as e:
             traceback.print_exc()
@@ -204,8 +211,8 @@ class PlotResource(Resource):
                 data = list(reader)
 
                 # Get the first 25-30 values of the specified columns
-                values1 = [float(row[column1]) for row in data]
-                values2 = [float(row[column2]) for row in data]
+                values1 = [row[column1] for row in data]
+                values2 = [row[column2] for row in data]
 
             # Prepare the JSON data
             plot_data = {column1: values1, column2: values2}

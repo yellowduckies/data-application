@@ -56,7 +56,7 @@
 
     function fetchColumnName(dataset_id) {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", `/dataset/${dataset_id}/get_columns`, true);
+        xhr.open("GET", `/dataset/${dataset_id}/get_columns?only_integer=1`, true);
 
         xhr.onload = function () {
             if (xhr.status === 200) {
