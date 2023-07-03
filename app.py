@@ -41,7 +41,7 @@ class DatasetResource(Resource):
         cursor = conn.cursor()
         try:
             # Retrieve the list of stored datasets
-            cursor.execute("SELECT * FROM datasets")
+            cursor.execute("SELECT * FROM datasets ORDER BY id DESC")
             dataset_names = cursor.fetchall()
             if len(dataset_names) > 0:
                 return dataset_names, 200
