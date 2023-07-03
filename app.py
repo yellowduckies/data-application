@@ -210,6 +210,9 @@ class PlotResource(Resource):
                 reader = csv.DictReader(csv_file)
                 data = list(reader)
 
+                if len(data)>100:
+                    data = data[:100]
+
                 # Get the first 25-30 values of the specified columns
                 values1 = [row[column1] for row in data]
                 values2 = [row[column2] for row in data]
