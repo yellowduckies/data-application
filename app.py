@@ -181,8 +181,8 @@ class ComputeResource(Resource):
 # Resource for the /dataset/:id/plot API
 class PlotResource(Resource):
     def get(self, dataset_id):
-        column1 = request.form['column1']
-        column2 = request.form['column2']
+        column1 = request.args.get('column1')
+        column2 = request.args.get('column2')
 
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -225,11 +225,11 @@ class PlotResource(Resource):
 # To post a new dataset / To get the list of all datasets
 api.add_resource(DatasetResource, '/dataset/')
 # To the columns of selected dataset
-api.add_resource(GetColumnResource, '/dataset/<int:dataset_id>/get_columns')
+api.add_resource(GetColumnResource, '/dataset/<int:dataset_id>/get_columns/')
 # To compute operations like: max, min, sum and average
 api.add_resource(ComputeResource, '/dataset/<int:dataset_id>/compute/')
 # To fetch all the values of columns for data ploting
-api.add_resource(PlotResource, '/dataset/<int:dataset_id>/plot')
+api.add_resource(PlotResource, '/dataset/<int:dataset_id>/plot/')
 
 
 @app.route('/')

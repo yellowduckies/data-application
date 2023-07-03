@@ -1,0 +1,167 @@
+<div style="width: 100%; height: 350px; overflow-y: scroll;">
+    <form method="post" class="px-5 pb-5 pt-2" enctype="multipart/form-data" onsubmit="handlePlotFormSubmit();"
+        id="plot-form">
+
+        <h1 class="mb-2 text-xl font-extrabold text-gray-900 md:text-xl lg:text-xl"><span
+                class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Plot</span></h1>
+        <div class="flex flex-row items-center gap-2">
+            <div class="">
+                <label for="select-filename-for-plot"
+                    class="block mb-2 text-sm font-medium text-gray-900">Filename</label>
+                <select type="text" id="select-filename-for-plot" aria-describedby="helper-text-explanation"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    name="select_filename" onchange="fetchColumnNamePlot(event.target.value)">
+                    <option value="" selected disabled>Select filename</option>
+                </select>
+                <div class="text-red-500 text-sm mt-2" id="select-filename-for-plot-error"></div>
+            </div>
+
+
+            <div class="">
+                <label for="select-column-name-1" class="block mb-2 text-sm font-medium text-gray-900">Column name
+                    1</label>
+                <select type="text" id="select-column-name-1" aria-describedby="helper-text-explanation"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    name="column1">
+                    <option value="" selected disabled>Select column name</option>
+                </select>
+                <div class="text-red-500 text-sm mt-2" id="select-column-name-1-error"></div>
+            </div>
+
+            <div class="">
+                <label for="select-column-name-2" class="block mb-2 text-sm font-medium text-gray-900">Column name
+                    2</label>
+                <select type="text" id="select-column-name-2" aria-describedby="helper-text-explanation"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    name="column2">
+                    <option value="" selected disabled>Select column name</option>
+                </select>
+                <div class="text-red-500 text-sm mt-2" id="select-column-name-2-error"></div>
+            </div>
+
+            <div class="">
+                <button class="w-full mt-4 bg-blue-500 text-white text-sm rounded-lg px-4 py-2 cursor-pointer"
+                    type="submit" id="plot-submit-button">
+                    Plot
+                </button>
+            </div>
+        </div>
+    </form>
+    <div id="myPlotHere"></div>
+</div>
+
+<script>
+    function fetchColumnNamePlot(dataset_id) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", `/dataset/${dataset_id}/get_columns`, true);
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var options = "<option value='' selected disabled>Select column name</option>";
+
+                for (var i = 0; i < data.length; i++) {
+                    var optionValue = data[i];
+                    options += `<option value="${optionValue}">${optionValue}</option>`;
+                }
+
+                document.getElementById("select-column-name-1").innerHTML = options;
+                document.getElementById("select-column-name-2").innerHTML = options;
+            } else {
+                var data = JSON.parse(xhr.responseText);
+                showValidationMessage(data);
+            }
+        };
+
+        xhr.send();
+    }
+
+    function handlePlotFormSubmit() {
+        event.preventDefault();
+
+        var plotSubmitButton = document.getElementById('plot-submit-button');
+        plotSubmitButton.disabled = true;
+
+        // Perform form validation
+        var filenameInput = document.getElementById('select-filename-for-plot');
+        var filename = filenameInput.value;
+        var columnNameInput1 = document.getElementById('select-column-name-1');
+        var columnName1 = columnNameInput1.value;
+        var columnNameInput2 = document.getElementById('select-column-name-2');
+        var columnName2 = columnNameInput2.value;
+
+        // Validate filename
+        if (filename === '') {
+            highlightField(filenameInput, 'select-filename-for-plot-error');
+            showValidationMessage('Filename is required');
+            plotSubmitButton.disabled = false;
+            return;
+        } else {
+            removeHighlightField(filenameInput, 'select-filename-for-plot-error')
+        }
+        if (columnName1 === '') {
+            highlightField(columnNameInput1, 'select-column-name-1-error');
+            showValidationMessage('Column name 1 is required');
+            plotSubmitButton.disabled = false;
+            return;
+        } else {
+            removeHighlightField(columnNameInput1, 'select-column-name-1-error')
+        }
+        if (columnName2 === '') {
+            highlightField(columnNameInput2, 'select-column-name-2-error');
+            showValidationMessage('Column name 2 is required');
+            plotSubmitButton.disabled = false;
+            return;
+        } else {
+            removeHighlightField(columnNameInput2, 'select-column-name-2-error')
+        }
+
+        // Perform additional actions or validations here
+        var form = document.getElementById('plot-form');
+        var formData = new FormData(form);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", `/dataset/${filename}/plot?column1=${formData.get('column1')}&column2=${formData.get('column2')}`, true);
+
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 400) {
+                var response = JSON.parse(xhr.responseText);
+                // Handle the plot data here (e.g., plot using Plotly)
+                console.log(response);
+                var xaxisColumn = Object.keys(response)[0]
+                var yaxisColumn = Object.keys(response)[1]
+
+
+                var graph = {
+                    x: response[xaxisColumn],
+                    y: response[yaxisColumn],
+                    type: 'scatter',
+                    mode: 'markers'
+                };
+
+                var data = [graph];
+
+                var layout = {
+                    scattermode: 'group',
+                    title: `Graph for ${xaxisColumn} VS ${yaxisColumn}`,
+                    xaxis: { title: xaxisColumn },
+                    yaxis: { title: yaxisColumn }
+                };
+                Plotly.newPlot('myPlotHere', data, layout);
+                plotSubmitButton.disabled = false;
+                showNotification('success', 'The graph has been loaded successfully');
+                // Plotly.newPlot('myPlotHere', response);
+            } else {
+                var errorResponse = JSON.parse(xhr.responseText);
+                showNotification('error', errorResponse['message']);
+            }
+        };
+
+        xhr.onerror = function () {
+            showNotification('error', 'Error retrieving plot data...');
+        };
+
+        xhr.send();
+
+    }
+</script>

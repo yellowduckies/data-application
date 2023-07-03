@@ -19,7 +19,7 @@
         <select type="text" id="select-column-name" aria-describedby="helper-text-explanation"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             name="column_name">
-            <option value="" selected disabled>Select file from below options</option>
+            <option value="" selected disabled>Select column name from below options</option>
         </select>
         <div class="text-red-500 text-sm mt-2" id="select-column-name-error"></div>
 
@@ -71,7 +71,7 @@
                 document.getElementById("select-column-name").innerHTML = options;
             } else {
                 var data = JSON.parse(xhr.responseText);
-                console.log(data)
+                showValidationMessage(data);
             }
         };
 

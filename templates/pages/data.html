@@ -90,6 +90,7 @@
                 createTableRows(data);
                 var selectOptions = generateSelectOptions(data);
                 document.getElementById("select-filename").innerHTML = selectOptions;
+                document.getElementById("select-filename-for-plot").innerHTML = selectOptions;
             } else {
                 var data = JSON.parse(xhr.responseText);
                 createTableRows(data);
