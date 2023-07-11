@@ -13,7 +13,7 @@ This is a project submission to XVector Labs.
 #### Get all datasets
 
 ```http
-GET http://3.7.68.98:5000/dataset
+curl -X GET http://3.7.68.98:5000/dataset
 ```
 
 | Description                |
@@ -23,7 +23,7 @@ GET http://3.7.68.98:5000/dataset
 #### Upload a dataset
 
 ```http
-POST http://3.7.68.98:5000/dataset
+curl -X POST -F "data_name=<string>" -F "file=@<path_to_your_file>" http://3.7.68.98:5000/dataset
 ```
 
 | Parameter | Type     | Description                       |
@@ -34,7 +34,7 @@ POST http://3.7.68.98:5000/dataset
 #### Compute a dataset
 
 ```http
-POST http://3.7.68.98:5000/dataset/<int:dataset_id>/compute
+curl -X POST -F "column_name=<string>" -F "operation=<max/average/min/sum(string)>" http://3.7.68.98:5000/dataset/<int:dataset_id>/compute
 ```
 
 | Parameter | Type     | Description                       |
@@ -46,7 +46,7 @@ POST http://3.7.68.98:5000/dataset/<int:dataset_id>/compute
 #### Get Plot data from dataset
 
 ```http
-GET http://3.7.68.98:5000/dataset/<int:dataset_id>/plot
+curl -X GET http://3.7.68.98:5000/dataset/<int:dataset_id>/plot?column1=<column_1>&column2=<column_2>
 ```
 
 | Parameter | Type     | Description                       |
@@ -86,7 +86,7 @@ Create a Database and create a .env file within the project directory and pass t
 
 
 
-#### Install all the project requirements
+#### Move to the project directory and use this command to run the code
 ```bash
 python3 app.py
 ```
