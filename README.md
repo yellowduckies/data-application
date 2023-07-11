@@ -68,9 +68,16 @@ To run this project
 pip install -r requirements.txt
 ```
 
+
+#### Create a Database with any name and then create a table using below SQL command
+
+```sql
+CREATE TABLE datasets (id SERIAL PRIMARY KEY, dataset VARCHAR(255), filepath VARCHAR(255), created_at TIMESTAMPTZ DEFAULT NOW());
+```
+
 #### Environment Variables
 
-Create a Database and create a .env file within the project directory and pass the values of
+Create a .env file within the project directory and pass the values of
 
 `DBNAME=<database name>`
 
