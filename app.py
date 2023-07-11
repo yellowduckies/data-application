@@ -22,8 +22,8 @@ app.config['DATABASE'] = {
 }
 upload_folder = os.getenv('UPLOAD_FOLDER')
 
-# Helper function to establish a database connection
 def get_db_connection():
+    """Helper function to establish a database connection"""
     conn = psycopg2.connect(
         dbname=app.config['DATABASE']['dbname'],
         user=app.config['DATABASE']['user'],
@@ -34,8 +34,8 @@ def get_db_connection():
     return conn
 
 
-# Resource for the /dataset API
 class DatasetResource(Resource):
+    """Resource for the /dataset API"""
     def get(self):
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -87,8 +87,8 @@ class DatasetResource(Resource):
             conn.rollback()
             return {'error': 'An error occurred while uploading the dataset.'}, 500
 
-# Resource for the /dataset/:id API
 class GetColumnResource(Resource):
+    """Resource for the /dataset/:id API"""
     def get(self, dataset_id):
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -141,8 +141,8 @@ class GetColumnResource(Resource):
             conn.close()
 
 
-# Resource for the /dataset/:id/compute API
 class ComputeResource(Resource):
+    """Resource for the /dataset/:id/compute API"""
     def post(self, dataset_id):
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -185,8 +185,8 @@ class ComputeResource(Resource):
             cursor.close()
             conn.close()
 
-# Resource for the /dataset/:id/plot API
 class PlotResource(Resource):
+    """Resource for the /dataset/:id/plot API"""
     def get(self, dataset_id):
         column1 = request.args.get('column1')
         column2 = request.args.get('column2')
@@ -232,13 +232,16 @@ class PlotResource(Resource):
 
 
 # Add the DatasetResource to the API
-# To post a new dataset / To get the list of all datasets
+"""To post a new dataset / To get the list of all datasets"""
 api.add_resource(DatasetResource, '/dataset/')
-# To the columns of selected dataset
+
+"""To the columns of selected dataset"""
 api.add_resource(GetColumnResource, '/dataset/<int:dataset_id>/get_columns/')
-# To compute operations like: max, min, sum and average
+
+"""To compute operations like: max, min, sum and average"""
 api.add_resource(ComputeResource, '/dataset/<int:dataset_id>/compute/')
-# To fetch all the values of columns for data ploting
+
+"""To fetch all the values of columns for data ploting"""
 api.add_resource(PlotResource, '/dataset/<int:dataset_id>/plot/')
 
 
@@ -246,8 +249,8 @@ api.add_resource(PlotResource, '/dataset/<int:dataset_id>/plot/')
 def index():
     return render_template('base.html')
 
-# Run the Flask application
 if __name__ == '__main__':
+    """Run the Flask application"""
     # Check if the required environment variables are set
     required_env_vars = ['DBNAME', 'USER',
                          'PASSWORD', 'HOST', 'PORT', 'UPLOAD_FOLDER']
