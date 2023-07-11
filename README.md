@@ -12,7 +12,7 @@ This is a project submission to XVector Labs.
 
 #### Get all datasets
 
-```http
+```bash
 curl -X GET http://3.7.68.98:5000/dataset
 ```
 
@@ -22,7 +22,7 @@ curl -X GET http://3.7.68.98:5000/dataset
 
 #### Upload a dataset
 
-```http
+```bash
 curl -X POST -F "data_name=<string>" -F "file=@<path_to_your_file>" http://3.7.68.98:5000/dataset
 ```
 
@@ -33,7 +33,7 @@ curl -X POST -F "data_name=<string>" -F "file=@<path_to_your_file>" http://3.7.6
 
 #### Compute a dataset
 
-```http
+```bash
 curl -X POST -F "column_name=<string>" -F "operation=<max/average/min/sum(string)>" http://3.7.68.98:5000/dataset/<int:dataset_id>/compute
 ```
 
@@ -45,7 +45,7 @@ curl -X POST -F "column_name=<string>" -F "operation=<max/average/min/sum(string
 
 #### Get Plot data from dataset
 
-```http
+```bash
 curl -X GET http://3.7.68.98:5000/dataset/<int:dataset_id>/plot?column1=<column_1>&column2=<column_2>
 ```
 
